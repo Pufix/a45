@@ -13,7 +13,7 @@ public:
 		capacity = 10;
 		elements = new  Type[10];
 	}
-	void add(Type element) {
+	void append(Type element) {
 		if (size == capacity) {
 			capacity *= 2;
 			Type* newElements = new Type[capacity];
@@ -24,9 +24,6 @@ public:
 		}
 		elements[size] = element;
 		size++;
-	}
-	Type get(int position) {
-		return elements[position];
 	}
 	int getSize() {
 		return size;
@@ -45,6 +42,9 @@ public:
 			elements = newElements;
 		}
 	}
+	Type operator[](int index) {
+		return elements[index];
+	}
 };
 class movie {
 private:
@@ -56,10 +56,10 @@ private:
 public:
 	movie() {
 		this->title = "";
-		this->year = 0;
-		this->genre  ="";
+		this->genre = "";
+		this->trailer = "";
 		this->likes = 0;
-		this->trailer  ="";
+		this->year = 0;
 	}
 	movie(string title, string genre, int year, int likes, string trailer) {
 		this->title = title;
@@ -82,7 +82,7 @@ public:
 		if (field == "trailer")
 			this->trailer = value;
 	}
-	bool operator==(const movie a){
+	bool operator==(const movie a) {
 		return a.title == title;
 	}
 };
@@ -101,11 +101,11 @@ public:
 		return pasword == password;
 	}
 	void addMovie(movie movie) {
-		watchlist.add(movie);
+		watchlist.append(movie);
 	}
 	void removeMovie(movie movie) {
 		for (int i = 0; i < watchlist.getSize(); i++) {
-			if (watchlist.get(i) == movie) {
+			if (watchlist[i] == movie) {
 				watchlist.remove(i);
 				return;
 			}
@@ -114,5 +114,4 @@ public:
 	dynamicVector<movie>getWatchlist() {
 		return watchlist;
 	}
-
 };
