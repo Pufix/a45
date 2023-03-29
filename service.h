@@ -1,7 +1,6 @@
 #pragma once
 #include "repository.h"
 using namespace std;
-
 class service {
 private:
 public:
@@ -38,6 +37,40 @@ public:
 			newuser.uuid = generateUUID();
 			newuser.privilegeLevel = 1;
 			this->repo.addUser(newuser);
+			return 0;
+		}
+		return -1;
+	}
+	movie searchMovie(string title) {
+		int n = this->repo.counterUsers();
+		for (int i = 0; i < n; i++)
+			if (this->repo.getMovie(i).title == title)
+				return this->repo.getMovie(i);
+		return movie();
+	}
+	int addMovie(string title, int year, string genre, int likes, string trailer) {
+		if (this->currentUser.privilegeLevel != 0)
+			return -1;
+		if (this->searchMovie(title) == movie()){
+			this->repo.addMovie(movie(title, genre, year, likes, trailer, generateUUID()));
+			return 0;
+		}
+		return -1;
+	}
+	int removeMovie(string title) {
+		if (this->currentUser.privilegeLevel != 0)
+			return -2;
+		if (this->searchMovie(title) != movie()) {
+			this->repo.deleteMovie(this->searchMovie(title));
+			return 0;
+		}
+		return -1;
+	}
+	int removeUser(string username) {
+		if (this->currentUser.privilegeLevel != 0)
+			return -2;
+		if (this->searchUser(username) != user()) {
+			this->repo.deleteUser(this->searchUser(username));
 			return 0;
 		}
 		return -1;

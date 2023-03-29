@@ -59,6 +59,7 @@ public:
 	string trailer;
 	string uuid;
 	friend ofstream& operator<< (ofstream& file, movie& movie) {
+		file << movie.uuid << endl;
 		file << movie.title << endl;
 		file << movie.genre << endl;
 		file << movie.year << endl;
@@ -67,6 +68,7 @@ public:
 		return file;
 	}
 	friend ifstream& operator>> (ifstream& file, movie& movie) {
+		file >> movie.uuid;
 		file >> movie.title;
 		file >> movie.genre;
 		file >> movie.year;
@@ -88,12 +90,13 @@ public:
 		this->likes = 0;
 		this->year = 0;
 	}
-	movie(string title, string genre, int year, int likes, string trailer) {
+	movie(string title, string genre, int year, int likes, string trailer,string uuid) {
 		this->title = title;
 		this->genre = genre;
 		this->year = year;
 		this->likes = likes;
 		this->trailer = trailer;
+		this->uuid = uuid;
 	}
 	void edit(string field, int value) {
 		if (field == "year")
@@ -112,7 +115,6 @@ public:
 	bool operator==(const movie a) {
 		return a.title == this->title;
 	}
-
 	bool operator!=(const movie a) {
 		return a.title != this->title;
 	}
@@ -170,6 +172,12 @@ public:
 	void addMovie(movie movie) {
 		this->watchlist.append(movie.uuid);
 	}
+	bool operator!=(user a) {
+		return this->uuid != a.uuid;
+	}
+	bool operator!=(string username) {
+		return this->username != username;
+	}
 	void removeMovie(movie movie) {
 		for (int i = 0; i < this->watchlist.getSize(); i++) {
 			if (this->watchlist[i] == movie.uuid) {
@@ -183,6 +191,9 @@ public:
 	}
 	bool operator==(const user user) {
 		return user.uuid == this->uuid;
+	}
+	bool operator==(string username) {
+		return this->username == username;
 	}
 };
 string generateUUID() {

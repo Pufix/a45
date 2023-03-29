@@ -73,6 +73,8 @@ public:
 			return 1;
 		if(strstr(command.c_str(), "delete") == command.c_str())
 			return 2;
+		if (strstr(command.c_str(), "remove") == command.c_str())
+			return 2;
 		if(strstr(command.c_str(), "update") == command.c_str())
 			return 3;
 		if(strstr(command.c_str(), "list") == command.c_str())
@@ -88,37 +90,165 @@ public:
 		command.erase(command.begin(), command.begin() + 3);
 		if (command == "") {
 			cout << "add <user> <username> <password>" << endl;
+			cout << "add <movie> <title> <year> <genre> <likes> <trailerLink>" << endl;	
 			return;
 		}
 		command.erase(command.begin(), command.begin()+1);
-		string username;
-		username = command;
-		for (int i=0;i<=username.size();i++)
-			if (i == username.size()) {
+		if (strstr(command.c_str(), "user") == command.c_str()) {
+			command.erase(command.begin(), command.begin() + 4);
+			string username;
+			username = command;
+			for (int i = 0; i <= username.size(); i++)
+				if (i == username.size()) {
+					cout << "Error: Invalid command!" << endl;
+					return;
+				}
+				else if (username[i] == ' ') {
+					username.erase(username.begin() + i, username.end());
+					command.erase(command.begin(), command.begin() + i);
+					break;
+				}
+			string password;
+			password = command;
+			while (!password.empty() && password[0] == ' ')
+				password.erase(password.begin());
+			if (username == "" || password == "") {
 				cout << "Error: Invalid command!" << endl;
 				return;
 			}
-			else if (username[i] == ' ') {
-				username.erase(username.begin()+i, username.end());
-				command.erase(command.begin(), command.begin() + i);
-				break;
+			int result = this->serv.addUser(username, password);
+			if (result == -1)
+				cout << "Error: Username already exists!" << endl;
+			else
+				cout << "Succesfully added user " << username << endl;
+		}
+		else if (strstr(command.c_str(), "movie") == command.c_str()) {
+			command.erase(command.begin(), command.begin() + 6);
+			//add <movie> <title> <year> <genre> <likes> <trailerLink>
+            string title;
+			title = command;
+			for (int i = 0;i <= title.size();i++)
+				if (i == title.size()) {
+					cout << "Error: Invalid command!" << endl;
+					return;
+				}
+				else if (title[i] == ' ') {
+					title.erase(title.begin() + i, title.end());
+					command.erase(command.begin(), command.begin() + i+1);
+					break;
+				}
+			if (title == "") {
+				cout << "Error: Invalid command!" << endl;
+				return;
 			}
-		string password;
-		password = command;
-		while(!password.empty()&&password[0]==' ')
-			password.erase(password.begin());
-		if (username == "" || password == "") {
-			cout << "Error: Invalid command!" << endl;
+			string year;
+			year = command;
+			for (int i = 0;i <= year.size();i++)
+				if (i == year.size()) {
+					cout << "Error: Invalid command!" << endl;
+					return;
+				}
+				else if (year[i] == ' ') {
+					year.erase(year.begin() + i, year.end());
+					command.erase(command.begin(), command.begin() + i+1);
+					break;
+				}
+			if (year == "") {
+				cout << "Error: Invalid command!" << endl;
+				return;
+			}
+			string genre;
+			genre = command;
+			for (int i = 0;i <= genre.size();i++)
+				if (i == genre.size()) {
+					cout << "Error: Invalid command!" << endl;
+					return;
+				}
+				else if (genre[i] == ' ') {
+					genre.erase(genre.begin() + i, genre.end());
+					command.erase(command.begin(), command.begin() + i+1);
+					break;
+				}
+			if (genre == "") {
+				cout << "Error: Invalid command!" << endl;
+				return;
+			}
+			string likes;
+			likes = command;
+			for (int i = 0;i <= likes.size();i++)
+				if (i == likes.size()) {
+					cout << "Error: Invalid command!" << endl;
+					return;
+				}
+				else if (likes[i] == ' ') {
+					likes.erase(likes.begin() + i, likes.end());
+					command.erase(command.begin(), command.begin() + i+1);
+					break;
+				}
+			if (likes == "") {
+				cout << "Error: Invalid command!" << endl;
+				return;
+			}
+			string trailer;
+			trailer = command;
+			for (int i=0;i<trailer.size();i++)
+				if (command[i] == ' ') {
+					cout << "Error: Invalid command" << endl;
+					return;
+				}
+			int result = this->serv.addMovie(title, stoi(year), genre, stoi(likes), trailer);
+			if (result == -1)
+				cout << "Error: Movie already exists!" << endl;
+			else
+				cout << "Succesfully added movie " << title << endl;
+		}
+		else
+			cout << "Error: Invalid command!" << endl;		
+	}
+	void deleteCommand(string command){
+		command.erase(command.begin(), command.begin() + 6);
+		if (command[0] != ' ') {
+			cout << "delete <user> <username>" << endl;
+			cout << "delete <movie> <title>" << endl;
 			return;
 		}
-		int result = this->serv.addUser(username,password);
-		if (result == -1)
-			cout << "Error: Username already exists!" << endl;
-		else
-			cout << "Succesfully added user " << username << endl;
+		command.erase(command.begin(), command.begin() + 1);
+		if (strstr(command.c_str(), "movie") == command.c_str()) {
+			command.erase(command.begin(), command.begin() + 5);
+			if (command[0] != ' ') {
+				cout << "Error: Invalid command!" << endl;
+				return;
+			}
+			command.erase(command.begin(), command.begin() + 1);
+			int result = serv.removeMovie(command);
+			if (result == 0)
+				cout << "Movie deleted!" << endl;
+			else if (result == -2)
+				cout << "You do not administrator privileges" << endl;
+			else
+				cout << "The given movie is not in the database"<<endl;
+			return;
+		}
+		else if (strstr(command.c_str(), "user") == command.c_str()) {
+			command.erase(command.begin(), command.begin() + 4);
+			if (command[0] != ' ') {
+				cout << "Error: Invalid command!" << endl;
+				return;
+			}
+			command.erase(command.begin(), command.begin() + 6);
+			int result = serv.removeUser(command);
+			if (result == 0)
+				cout << "User deleted!" << endl;
+			else if (result == -2)
+				cout << "You do not administrator privileges" << endl;
+			else
+				cout << "The given user is not in the database"<<endl;
+			return;
+			return;
+		}
+		cout << "Error: Invalid command!" << endl;
 	}
-	void deleteCommand(){}
-	void updateCommand(){}
+	void updateCommand(string command){}
 	void listCommand(){}
 	void filterCommand(){}
 	void helpScreenAdmin() {
@@ -141,10 +271,10 @@ public:
 			this->addCommand(command);
 			break;
 		case 2:	
-			this->deleteCommand();
+			this->deleteCommand(command);
 			break;
 		case 3:
-			this->updateCommand();
+			this->updateCommand(command);
 			break;
 		case 4:
 			this->listCommand();

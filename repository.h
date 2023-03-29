@@ -9,7 +9,7 @@ private:
 public:
 	repository() {
 		this->userLoad();
-		//this->movieLoad();
+		this->movieLoad();
 	}
 	void addUser(user newUser) {
 		this->users.append(newUser);
@@ -68,7 +68,23 @@ public:
 		while (!fin.eof()) {
 			movie newMovie;
 			fin >> newMovie;
+			if (newMovie == movie())
+				break;
 			this->movies.append(newMovie);
 		}
+	}
+	void deleteMovie(movie movieToDelete) {
+		for (int i = 0; i < this->movies.getSize(); i++)
+			if (this->movies[i] == movieToDelete) {
+				this->movies.remove(i);
+				return;
+			}
+	}
+	void deleteUser(user userToDelete) {
+		for (int i = 0; i < this->users.getSize(); i++)
+			if (this->users[i] == userToDelete) {
+				this->users.remove(i);
+				return;
+			}
 	}
 };
